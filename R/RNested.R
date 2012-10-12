@@ -23,7 +23,7 @@ sset.box <- function(box, nss,
                 llfn)
     lpr <- rep(0.0,
                nss)
-    data.frame(p=p, ll=ll, lpr=lpr)
+    data.frame(p=I(p), ll=ll, lpr=lpr)
   }
 
 ##' Create a function that will accept or reject proposals for the new sample
@@ -62,8 +62,76 @@ mkPriorSamplePred <- function(s)
     }
 }
 
+##' Rectangular offseting with user supplied scales, pretty much the
+##' simplest offsetter
+##'
+##' .. content for \details{} ..
+##' @title 
+##' @param scale 
+##' @return 
+##' @author bnikolic
+rectOffseter <- function(scale)
+  {
+    function()
+      {
+        rnorm(length(scale), sd=scale)
+      }
+  }
 
-nested.step <- function(ss, llf, lpf,
+CPChain <- function(s, scale, n,
+                    llf, lpf)
+  {
+    pred <- mkPriorSamplePred(s)
+    off  <- rectOffseter(scale)
+    pcurr <- s$p
+    ll <- 0
+    lp <- 0
+    r <- sapply(1:n, function(x) {
+      pnew <- pcurr+off()
+      ll <<- llf(pnew)
+      lp <<- lpf(pnew)
+      if (pred(ll, lp))
+        {
+          pcurr <<- pnew
+          return (TRUE);
+        }
+      else
+        {
+          return (FALSE);
+        }
+    })
+    if( any(r) )
+      {
+        return (list(p=pcurr, ll=ll, lpr=lp));
+      }
+    else
+      {
+      return (FALSE);
+    }
+  }
+
+##' Create a box prior function (old)
+##'
+##' @title 
+##' @param box 
+##' @return Box prior function
+##' @author bnikolic
+boxp <- function(box)
+  {
+    ff <- function (x)
+      {
+        for (i in 1:length(x))
+            if (x[i] < box[2*i-1] || x[i] > box[2*i] )
+              {
+                return( -998)
+              }
+        return (0);
+      }
+    return(ff)
+  }
+
+
+nested.sample <- function(ss, llf, lpf,
                         psampler)
   {
     #inclomplete
