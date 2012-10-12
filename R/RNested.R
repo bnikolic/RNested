@@ -2,7 +2,6 @@
 # Nested sampling, implemented in R
 
 
-
 ##' Create a starting set based on a box prior
 ##'
 ##' .. content for \details{} ..
@@ -81,23 +80,51 @@ rectOffseter <- function(scale)
       }
   }
 
+
+##' Return a random element of the live set
+##'
+##' @title 
+##' @param cs 
+##' @return The selected element
+##' @author bnikolic
 randomEl <- function(cs)
   {
     N <- dim(cs)[1]
     return (cs[as.integer(runif(1, min=1, max=N)),]    )
   }
 
-CPChain <- function(s, scale, n,
+mkFixedRectProp <- function(scales)
+  {
+    off  <- rectOffseter(scales)
+    function (x)
+      {
+        x+off()
+      }
+  }
+
+##' Constrained Prior Sampler using modified MCMC
+##'
+##' @title 
+##' @param s 
+##' @param scale 
+##' @param n 
+##' @param llf 
+##' @param lpf 
+##' @param cs 
+##' @return 
+##' @author bnikolic
+CPChain <- function(s,
+                    proposer,
+                    n,
                     llf, lpf,
                     cs)
   {
     pred <- mkPriorSamplePred(s)
-    off  <- rectOffseter(scale)
     pcurr <- randomEl(cs)$p
     ll <- 0
     lp <- 0
     r <- sapply(1:n, function(x) {
-      pnew <- pcurr+off()
+      pnew <- proposer(pcurr)
       llnew <- llf(pnew)
       lpnew <- lpf(pnew)
       if (pred(llnew, lpnew))
@@ -121,6 +148,19 @@ CPChain <- function(s, scale, n,
       return (FALSE);
     }
   }
+
+mkSimplestPSampler <- function(s)
+  {
+    proposer <- mkFixedRectProp(c(s, s));
+    function(worst,llf,lpf,cs) { CPChain(worst,
+                                         proposer,
+                                         100,
+                                         llf,
+                                         lpf,
+                                         cs)
+                               }
+  }
+
 
 ##' Create a box prior function (old)
 ##'
