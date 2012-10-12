@@ -1,6 +1,9 @@
 # Bojan Nikolic <bojan@bnikolic.co.uk>
 # Nested sampling, implemented in R
 
+library(plotrix)
+library(fields)
+
 ##' Create a starting set based on a box prior
 ##'
 ##' .. content for \details{} ..
@@ -174,8 +177,56 @@ nested.sample <- function(cs,
         if (identical(r,FALSE))
           break;
         cs <- r[[1]]
-        cout <- rbind(cout, r[[2]])
+        nsamples <- dim(cout)[[1]]
+        if (is.null(nsamples))
+          nsamples <- 0;
+        nlive <-    dim(cs)[[1]]
+        weight <- exp(-1.0*nsamples/nlive) - exp(-1.0*(nsamples+1)/nlive)
+        cout <- rbind(cout, data.frame(c(r[[2]][1,], w=weight)))
       }
-    return (list(cs, data.frame(cout)));    
+    return (list(cs, data.frame(cout,
+                                row.names=NULL)));    
   }
-              
+
+
+##'  .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##' @title 
+##' @param no 
+##' @return 
+##' @author bnikolic
+nested.summary <- function(r)
+  {
+    evidencec <- cumsum(exp(r$ll)*r$w)
+    plot(stepfun(1:(length(evidencec)-1),evidencec ),
+         main="Evidence growth curve",
+         ylab="Evidence",
+         xlab="Sample number",
+         )
+    cat(" *** Evidence: "  , tail(evidencec,1) , "\n")
+    
+  }
+
+nested.hist2 <- function(r)
+  {
+    N <- dim(r$p)[2]
+    par(mfrow=c(N,N))
+    for (i in 1:N)
+      for (j in 1:N)
+        {
+          if (i==j)
+            {
+                      weighted.hist(r$p[,i],
+                                    exp(r$ll)*r$w,
+                                    main=paste("Marginal probability distribution of parameter", i))
+                    }
+          else
+            {
+              ff <- data.frame(x=r$p[,i],
+                               y=r$p[,j],
+                               weight=exp(r$ll)*r$w)
+              contour(smooth.2d( ff$weight, x=ff))
+            }
+        }
+  }
