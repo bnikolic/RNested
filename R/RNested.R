@@ -171,6 +171,8 @@ nested.sample <- function(cs,
     for (i in 1:N)
       {
         r <- nested.step(cs, llf, lpf, psampler)
+        if (identical(r,FALSE))
+          break;
         cs <- r[[1]]
         cout <- rbind(cout, r[[2]])
       }
