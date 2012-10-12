@@ -43,7 +43,7 @@ mkPriorSamplePred <- function(s)
         }
       else
         {
-          if(lp > s$lpr)
+          if(lp >= s$lpr)
             {
               return (TRUE);
             }
@@ -51,6 +51,7 @@ mkPriorSamplePred <- function(s)
             {
               if ( exp(lp-s$lpr) > runif(1))
                 {
+                  print ("accepted ")
                   return (TRUE);
                 }
               else
@@ -88,11 +89,13 @@ CPChain <- function(s, scale, n,
     lp <- 0
     r <- sapply(1:n, function(x) {
       pnew <- pcurr+off()
-      ll <<- llf(pnew)
-      lp <<- lpf(pnew)
-      if (pred(ll, lp))
+      llnew <- llf(pnew)
+      lpnew <- lpf(pnew)
+      if (pred(llnew, lpnew))
         {
           pcurr <<- pnew
+          ll <<- llnew
+          lp <<- lpnew
           return (TRUE);
         }
       else
@@ -130,12 +133,47 @@ boxp <- function(box)
     return(ff)
   }
 
-
-nested.sample <- function(ss, llf, lpf,
+##' Make one step of the nested sampler
+##'
+##' .. content for \details{} ..
+##' @title 
+##' @param cs 
+##' @param llf 
+##' @param lpf 
+##' @param psampler 
+##' @return list (new current set, eliminated row)
+##' @author bnikolic
+nested.step <- function(cs,
+                        llf, lpf,
                         psampler)
   {
-    #inclomplete
-    psampler(ss[which.min(ss$ll)],
-             lpf)
+    worsti <- which.min(cs$ll)
+    worst <- cs[worsti,]
+    cs[worsti,] <- psampler(worst, llf, lpf)
+    return (list(cs, worst));
+  }
+
+
+nested.sample <- function(cs,
+                          llf, lpf,
+                          psampler,
+                          cout=NA,
+                          N=1)
+  {
+    for (i in 1:N)
+      {
+        r <- nested.step(cs, llf, lpf, psampler)
+        cs <- r[[1]]
+
+        if(is.na(cout))
+          {
+            cout <- rbind(r[[2]])
+          }
+        else
+          {
+            cout <- rbind(cout, r[[2]])
+          }
+      }
+    return (list(cs, data.frame(cout)));    
   }
               
