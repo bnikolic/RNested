@@ -124,7 +124,7 @@ boxp <- function(box)
     ff <- function (x)
       {
         for (i in 1:length(x))
-            if (x[i] < box[2*i-1] || x[i] > box[2*i] )
+            if (x[[i]] < box[[2*i-1]] || x[[i]] > box[[2*i]] )
               {
                 return( -998)
               }
@@ -149,8 +149,16 @@ nested.step <- function(cs,
   {
     worsti <- which.min(cs$ll)
     worst <- cs[worsti,]
-    cs[worsti,] <- psampler(worst, llf, lpf)
-    return (list(cs, worst));
+    newp <- psampler(worst, llf, lpf)
+    if (identical(newp,FALSE))
+      {
+        return (newp);
+      }
+    else
+      {
+      cs[worsti,] <- newp
+      return (list(cs, worst));
+      }
   }
 
 
