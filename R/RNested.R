@@ -157,22 +157,14 @@ nested.step <- function(cs,
 nested.sample <- function(cs,
                           llf, lpf,
                           psampler,
-                          cout=NA,
+                          cout=rbind(),
                           N=1)
   {
     for (i in 1:N)
       {
         r <- nested.step(cs, llf, lpf, psampler)
         cs <- r[[1]]
-
-        if(is.na(cout))
-          {
-            cout <- rbind(r[[2]])
-          }
-        else
-          {
-            cout <- rbind(cout, r[[2]])
-          }
+        cout <- rbind(cout, r[[2]])
       }
     return (list(cs, data.frame(cout)));    
   }
