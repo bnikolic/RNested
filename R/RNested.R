@@ -1,8 +1,7 @@
 # Bojan Nikolic <bojan@bnikolic.co.uk>
 # Nested sampling, implemented in R
 
-library(plotrix)
-library(fields)
+
 
 ##' Create a starting set based on a box prior
 ##'
@@ -82,12 +81,19 @@ rectOffseter <- function(scale)
       }
   }
 
+randomEl <- function(cs)
+  {
+    N <- dim(cs)[1]
+    return (cs[as.integer(runif(1, min=1, max=N)),]    )
+  }
+
 CPChain <- function(s, scale, n,
-                    llf, lpf)
+                    llf, lpf,
+                    cs)
   {
     pred <- mkPriorSamplePred(s)
     off  <- rectOffseter(scale)
-    pcurr <- s$p
+    pcurr <- randomEl(cs)$p
     ll <- 0
     lp <- 0
     r <- sapply(1:n, function(x) {
@@ -152,7 +158,7 @@ nested.step <- function(cs,
   {
     worsti <- which.min(cs$ll)
     worst <- cs[worsti,]
-    newp <- psampler(worst, llf, lpf)
+    newp <- psampler(worst, llf, lpf, cs)
     if (identical(newp,FALSE))
       {
         return (newp);
@@ -208,25 +214,3 @@ nested.summary <- function(r)
     
   }
 
-nested.hist2 <- function(r)
-  {
-    N <- dim(r$p)[2]
-    par(mfrow=c(N,N))
-    for (i in 1:N)
-      for (j in 1:N)
-        {
-          if (i==j)
-            {
-                      weighted.hist(r$p[,i],
-                                    exp(r$ll)*r$w,
-                                    main=paste("Marginal probability distribution of parameter", i))
-                    }
-          else
-            {
-              ff <- data.frame(x=r$p[,i],
-                               y=r$p[,j],
-                               weight=exp(r$ll)*r$w)
-              contour(smooth.2d( ff$weight, x=ff))
-            }
-        }
-  }
