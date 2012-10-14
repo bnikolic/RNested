@@ -1,11 +1,13 @@
 # Bojan Nikolic <bojan@bnikolic.co.uk>
 # Nested sampling, implemented in R
 
+library(MASS)
+
 
 ##' Create a starting set based on a box prior
 ##'
 ##' .. content for \details{} ..
-##' @title 
+##' @title sset.box
 ##' @param box Matrix with boundaries of the box
 ##' @param nss Number of elements of starting set
 ##' @param llfn Function to initilalise the log-likelihod
@@ -19,6 +21,8 @@ sset.box <- function(box, nss,
                function(r) {
                  runif(nss, min=r[[1]], max=r[[2]]) 
                })
+    # Also calculate the likelihood and set prior probability for all
+    # the points in the starting set
     ll <- apply(p,
                 1,
                 llfn)
@@ -30,9 +34,9 @@ sset.box <- function(box, nss,
 ##' Create a function that will accept or reject proposals for the new sample
 ##'
 ##' .. content for \details{} ..
-##' @title 
+##' @title mkPriorSamplePred
 ##' @param s Row of the live set which is being replaced
-##' @return 
+##' @return The predicate function
 ##' @author bnikolic
 mkPriorSamplePred <- function(s)
 {
@@ -68,9 +72,9 @@ mkPriorSamplePred <- function(s)
 ##' simplest offsetter
 ##'
 ##' .. content for \details{} ..
-##' @title 
+##' @title rectOffseter
 ##' @param scale 
-##' @return 
+##' @return Function that generates the offset
 ##' @author bnikolic
 rectOffseter <- function(scale)
   {
@@ -83,7 +87,7 @@ rectOffseter <- function(scale)
 
 ##' Return a random element of the live set
 ##'
-##' @title 
+##' @title randomEl
 ##' @param cs 
 ##' @return The selected element
 ##' @author bnikolic
@@ -104,14 +108,14 @@ mkFixedRectProp <- function(scales)
 
 ##' Constrained Prior Sampler using modified MCMC
 ##'
-##' @title 
+##' @title CPChain
 ##' @param s 
 ##' @param scale 
 ##' @param n 
 ##' @param llf 
 ##' @param lpf 
 ##' @param cs 
-##' @return 
+##' @return Either the new point or if new point was not found FALSE
 ##' @author bnikolic
 CPChain <- function(s,
                     proposer,
@@ -164,7 +168,7 @@ mkSimplestPSampler <- function(s)
 
 ##' Create a box prior function (old)
 ##'
-##' @title 
+##' @title boxp
 ##' @param box 
 ##' @return Box prior function
 ##' @author bnikolic
@@ -185,7 +189,7 @@ boxp <- function(box)
 ##' Make one step of the nested sampler
 ##'
 ##' .. content for \details{} ..
-##' @title 
+##' @title nested.step
 ##' @param cs 
 ##' @param llf 
 ##' @param lpf 
@@ -238,9 +242,9 @@ nested.sample <- function(cs,
 ##'  .. content for \description{} (no empty lines) ..
 ##'
 ##' .. content for \details{} ..
-##' @title 
+##' @title nested.summary
 ##' @param no 
-##' @return 
+##' @return No return value
 ##' @author bnikolic
 nested.summary <- function(r)
   {
