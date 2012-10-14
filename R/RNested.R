@@ -165,6 +165,34 @@ mkSimplestPSampler <- function(s)
                                }
   }
 
+##' Use the covariance of the points in the live set to determine the
+##' scales for sampling the prior space
+##'
+##' @title mkCovarianceSampler
+##' @param s 
+##' @return Constrained prior sampler 
+##' @author bnikolic
+mkCovarianceSampler <- function(s)
+  {
+    cvm <- 0
+    proposer <- function(x)
+      {
+        N <- dim(cvm)[[1]]
+        x+mvrnorm(n=1,
+                  mu=rep(0,N),
+                  Sigma=cvm)
+      }
+    function(worst,llf,lpf,cs) {
+      cvm <<- cov(cs$p)
+      CPChain(worst,
+              proposer,
+              100,
+              llf,
+              lpf,
+              cs)
+    }
+  }
+
 
 ##' Create a box prior function (old)
 ##'
