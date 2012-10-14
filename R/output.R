@@ -5,7 +5,27 @@
 # Output of results from nested sampling
 
 library(plotrix)
-library(fields)
+library(ks)
+
+##' A brief summary of output of the nested sampling
+##'
+##' @title nested.summary
+##' @param no 
+##' @return No return value
+##' @author bnikolic
+nested.summary <- function(r)
+  {
+    evidencec <- cumsum(exp(r$ll)*r$w)
+    plot(stepfun(1:(length(evidencec)-1),evidencec ),
+         main="Evidence growth curve",
+         ylab="Evidence",
+         xlab="Sample number",
+         )
+    cat(" *** Evidence: "  , tail(evidencec,1) , "\n")
+    
+  }
+
+
 
 nested.hist2 <- function(r)
   {
@@ -23,10 +43,10 @@ nested.hist2 <- function(r)
           else
             {
               w <- exp(r$ll)*r$w
-              ff <- data.frame(x=r$p[,i],
-                               y=r$p[,j])
-              # This does not do an equivalent of a histogram!
-              #contour(smooth.2d( w, x=ff))
+              x2 <- kde(r$p,
+                        H=Hpi(r$p, binned=TRUE),
+                        w=exp(r$ll)*r$w)
+              plot(x2)
             }
         }
   }

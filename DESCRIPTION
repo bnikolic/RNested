@@ -1,0 +1,14 @@
+Package: RNested
+Type: Package
+Title: R impelmentation of the Nested Sampling algorithm
+Version: 0.1
+Depends:
+    
+Date: 2012-10-14
+Author: Bojan Nikolic
+Maintainer: Bojan Nikolic <bojan@bnikolic.co.uk>
+Description: 
+License: GPL-2
+Collate:
+    'output.R'
+    'RNested.R'

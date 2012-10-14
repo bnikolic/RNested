@@ -267,22 +267,3 @@ nested.sample <- function(cs,
   }
 
 
-##'  .. content for \description{} (no empty lines) ..
-##'
-##' .. content for \details{} ..
-##' @title nested.summary
-##' @param no 
-##' @return No return value
-##' @author bnikolic
-nested.summary <- function(r)
-  {
-    evidencec <- cumsum(exp(r$ll)*r$w)
-    plot(stepfun(1:(length(evidencec)-1),evidencec ),
-         main="Evidence growth curve",
-         ylab="Evidence",
-         xlab="Sample number",
-         )
-    cat(" *** Evidence: "  , tail(evidencec,1) , "\n")
-    
-  }
-
