@@ -6,7 +6,6 @@ library(MASS)
 
 ##' Create a starting set based on a box prior
 ##'
-##' .. content for \details{} ..
 ##' @title sset.box
 ##' @param box Matrix with boundaries of the box
 ##' @param nss Number of elements of starting set
@@ -33,7 +32,6 @@ sset.box <- function(box, nss,
 
 ##' Create a function that will accept or reject proposals for the new sample
 ##'
-##' .. content for \details{} ..
 ##' @title mkPriorSamplePred
 ##' @param s Row of the live set which is being replaced
 ##' @return The predicate function
@@ -71,9 +69,9 @@ mkPriorSamplePred <- function(s)
 ##' Rectangular offseting with user supplied scales, pretty much the
 ##' simplest offsetter
 ##'
-##' .. content for \details{} ..
 ##' @title rectOffseter
-##' @param scale 
+##' @param scale  Array of scales (one for each parameter of the
+##' problem) for generation of the offsets
 ##' @return Function that generates the offset
 ##' @author bnikolic
 rectOffseter <- function(scale)
@@ -88,7 +86,7 @@ rectOffseter <- function(scale)
 ##' Return a random element of the live set
 ##'
 ##' @title randomEl
-##' @param cs 
+##' @param cs The live (or current) set
 ##' @return The selected element
 ##' @author bnikolic
 randomEl <- function(cs)
@@ -109,12 +107,12 @@ mkFixedRectProp <- function(scales)
 ##' Constrained Prior Sampler using modified MCMC
 ##'
 ##' @title CPChain
-##' @param s 
-##' @param scale 
-##' @param n 
-##' @param llf 
-##' @param lpf 
-##' @param cs 
+##' @param s The starting point
+##' @param proposer Function to propose new points
+##' @param n Number of steps to make 
+##' @param llf Log-likelihood function
+##' @param lpf Log-prior function
+##' @param cs Live (or current) set
 ##' @return Either the new point or if new point was not found FALSE
 ##' @author bnikolic
 CPChain <- function(s,
@@ -169,10 +167,10 @@ mkSimplestPSampler <- function(s)
 ##' scales for sampling the prior space
 ##'
 ##' @title mkCovarianceSampler
-##' @param s 
+##' @param s Scale the covariances of the live set by this factor before using them for sampling
 ##' @return Constrained prior sampler 
 ##' @author bnikolic
-mkCovarianceSampler <- function(s)
+mkCovarianceSampler <- function(s=1.0)
   {
     cvm <- 0
     proposer <- function(x)
@@ -180,7 +178,7 @@ mkCovarianceSampler <- function(s)
         N <- dim(cvm)[[1]]
         x+mvrnorm(n=1,
                   mu=rep(0,N),
-                  Sigma=cvm)
+                  Sigma=cvm*s)
       }
     function(worst,llf,lpf,cs) {
       cvm <<- cov(cs$p)
@@ -194,10 +192,10 @@ mkCovarianceSampler <- function(s)
   }
 
 
-##' Create a box prior function (old)
+##' Create a box prior function
 ##'
 ##' @title boxp
-##' @param box 
+##' @param box The box inside which the prior probability is finite
 ##' @return Box prior function
 ##' @author bnikolic
 boxp <- function(box)
@@ -216,12 +214,11 @@ boxp <- function(box)
 
 ##' Make one step of the nested sampler
 ##'
-##' .. content for \details{} ..
 ##' @title nested.step
-##' @param cs 
-##' @param llf 
-##' @param lpf 
-##' @param psampler 
+##' @param cs The current (live) set
+##' @param llf Log-likelihood function
+##' @param lpf Log-prior function 
+##' @param psampler The prior space sampler
 ##' @return list (new current set, eliminated row)
 ##' @author bnikolic
 nested.step <- function(cs,

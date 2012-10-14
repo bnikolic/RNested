@@ -10,7 +10,7 @@ library(ks)
 ##' A brief summary of output of the nested sampling
 ##'
 ##' @title nested.summary
-##' @param no 
+##' @param r The data frame with output of  nested sampler
 ##' @return No return value
 ##' @author bnikolic
 nested.summary <- function(r)

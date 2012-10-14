@@ -1,9 +1,11 @@
 Package: RNested
 Type: Package
-Title: R impelmentation of the Nested Sampling algorithm
+Title: Implementation of the Nested Sampling algorithm in R
 Version: 0.1
 Depends:
-    
+    MASS,
+    ks,
+    plotrix
 Date: 2012-10-14
 Author: Bojan Nikolic
 Maintainer: Bojan Nikolic <bojan@bnikolic.co.uk>
