@@ -54,7 +54,6 @@ mkPriorSamplePred <- function(s)
             {
               if ( exp(lp-s$lpr) > runif(1))
                 {
-                  print ("accepted ")
                   return (TRUE);
                 }
               else
