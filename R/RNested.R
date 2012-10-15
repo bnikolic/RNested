@@ -105,6 +105,13 @@ mkFixedRectProp <- function(scales)
 
 ##' Constrained Prior Sampler using modified MCMC
 ##'
+##' Note that the performance of the overal nested sampler is close to
+##' linearly dependent on the value of the parameter n. When  a good
+##' proposer (in the sense that it proposes that are uncorrelated with
+##' the starting or existing points but tend to satisfy the likelihood
+##' constraint) for new points is used this value of n can be reduced
+##' leading to better performance.
+##' 
 ##' @title CPChain
 ##' @param s The starting point
 ##' @param proposer Function to propose new points
@@ -166,7 +173,8 @@ mkSimplestPSampler <- function(s)
 ##' scales for sampling the prior space
 ##'
 ##' @title mkCovarianceSampler
-##' @param s Scale the covariances of the live set by this factor before using them for sampling
+##' @param s Scale the covariances of the live set by this factor
+##' before using them for sampling
 ##' @return Constrained prior sampler 
 ##' @author bnikolic
 mkCovarianceSampler <- function(s=1.0)
@@ -193,6 +201,9 @@ mkCovarianceSampler <- function(s=1.0)
 
 ##' Create a box prior function
 ##'
+##' The prior function returned takes position in parameter space as
+##' an argument and returns log-prior probability. Value of -998 is
+##' returned outside the box and 0 inside the box
 ##' @title boxp
 ##' @param box The box inside which the prior probability is finite
 ##' @return Box prior function
@@ -211,7 +222,7 @@ boxp <- function(box)
     return(ff)
   }
 
-##' Make one step of the nested sampler
+##' Take one step of the nested sampler
 ##'
 ##' @title nested.step
 ##' @param cs The current (live) set
@@ -238,7 +249,31 @@ nested.step <- function(cs,
       }
   }
 
-
+##' Do nested sampling of the suplied pair of log-likelihood and prior
+##' probability functions
+##'
+##' This function is the top-level driver for the nested sampling
+##' algorithm. It requires preparation of a starting set (using for
+##' example sset.box) and a constrained prior space sampler (using for
+##' example mkCovarianceSampler). It allows restart of the sampling if
+##' inspection of outputs shows that the sampler may not have
+##' converged
+##' @title nested.sample
+##' @param cs The current/live/starting set of poings
+##' @param llf  The log-likelihood function (which should take one
+##' argument which is the point in parameter space at which to evalue
+##' the likelihood)
+##' @param lpf the log-prior probability function (which should take
+##' one argument, which is the point in parameter sample)
+##' @param psampler The prior sampler to use to advance find sample a
+##' new point  from the prior space 
+##' @param cout Optional parameter which is the output of a previous
+##' run of the nested sampler. Allows easy restart of the algorithm
+##' @param N Number of samples to make
+##' @return List of the live set  and the output of nested
+##' sampling. See nested.summary and nested.hist2 on how to interpret
+##' the output
+##' @author bnikolic
 nested.sample <- function(cs,
                           llf, lpf,
                           psampler,
