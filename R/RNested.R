@@ -293,8 +293,8 @@ nested.sample <- function(cs,
         weight <- exp(-1.0*nsamples/nlive) - exp(-1.0*(nsamples+1)/nlive)
         cout <- rbind(cout, data.frame(c(r[[2]][1,], w=weight)))
       }
-    return (list(cs, data.frame(cout,
-                                row.names=NULL)));    
+    return (list(cs=cs, cout=data.frame(cout,
+                          row.names=NULL)));    
   }
 
 

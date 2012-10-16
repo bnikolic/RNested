@@ -101,10 +101,15 @@ ss <- sset.box(array( c(-1,6,-1,6) , dim=c(2,2)), 100, slfn)
 
 Finally, the nested sampling can be run by:
 \begin{Scode}{fig=TRUE, echo=TRUE}
-r <- nested.sample(ss, slfn, lpf, mkCovarianceSampler(), N=3000)
-nested.summary(r[[2]])
-nested.hist2(r[[2]])
+r <- nested.sample(ss, slfn, lpf, mkCovarianceSampler(), N=1500)
+nested.summary(r$cout)
 \end{Scode}
+
+And the posterior distribution plotted:
+\begin{Scode}{fig=TRUE, echo=TRUE}
+nested.hist2(r$cout)
+\end{Scode}
+
 
 
 
