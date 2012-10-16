@@ -26,9 +26,10 @@ fashion for Baysian analysis: the writing down of the likelihood
 function, the prior probability and the model to be used. 
 
 The examples here are based on assumption that the observations being
-fitted to have uncertainties that are normally distributed and
-independent. Therefore, a generator for the log-likelihood $\log P(D | \theta )$
-function can be written as:
+analysed have uncertainties that are normally distributed and
+independent of each other (in real experiments this often not the
+case!). Therefore, a generator for the log-likelihood $\log P(D |
+\theta )$ function can be written as:
 \begin{Scode}
 lkl1d <- function(x, yobs, model, err)
   {
@@ -44,8 +45,10 @@ The parameters to this function are:
 \begin{description}
 \item[x] The abscissa points at which observations are available
 \item[yobs] The observed values 
-\item[model] The model to fit, which should be a function of one variable
-\item[err] The uncertainty in observations
+\item[model] The model to fit, which should be a function of one
+  variable which is the point in parameter space at which to generate
+  the predicted observations
+\item[err] The uncertainty in each observations
 \end{description}
 
 Note also that:
@@ -99,13 +102,30 @@ from the \code{RNested} package:
 ss <- sset.box(array( c(-1,6,-1,6) , dim=c(2,2)), 100, slfn)
 \end{Scode}
 
-Finally, the nested sampling can be run by:
+Finally, the nested sampling can be run. It is usually not obvious
+\emph{a-priori\/} how many samples need to be taken before the problem
+converges. For this reason \code{RNested} provides convenient re-start
+functionality so that sampler can be restarted if it is determined
+that convergence has not yet been achieved. This is demonstrated
+below, where the first run of the sampler is for only 500 samples:
 \begin{Scode}{fig=TRUE, echo=TRUE}
-r <- nested.sample(ss, slfn, lpf, mkCovarianceSampler(), N=1500)
+r <- nested.sample(ss, slfn, lpf, mkCovarianceSampler(), N=500)
 nested.summary(r$cout)
 \end{Scode}
+As can be seen in the summary plot/evidence growth curve above, the
+evidence is still clearly increasing after 500 samples, showing that
+it is that sampler has not converged. Therefore, it is necessary to
+restart the sampler which can be done as:
+\begin{Scode}{fig=TRUE, echo=TRUE}
+r <- nested.sample(r$cs, slfn, lpf, mkCovarianceSampler(), N=500, r$cout)
+nested.summary(r$cout)
+\end{Scode}
+The evidence curve now shows a turnover indicating that convergence
+has been achieved. 
 
-And the posterior distribution plotted:
+Function \code{nested.summary} displays the total evidence while the
+posterior distribution can be viewed using the \code{nested.hist2}
+function:
 \begin{Scode}{fig=TRUE, echo=TRUE}
 nested.hist2(r$cout)
 \end{Scode}
