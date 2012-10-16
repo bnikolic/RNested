@@ -4,6 +4,8 @@
 #
 # Output of results from nested sampling
 
+library(plyr)
+library(foreach)
 library(plotrix)
 library(ks)
 
@@ -52,3 +54,10 @@ nested.hist2 <- function(r)
   }
 
 
+nested.fan <- function(r, m, xmin, xmax)
+  {
+    xvals <- seq(xmin, xmax,  length.out=100)
+    pw <-cbind(xvals, foreach(i=1:nrow(r), .combine=c) %do% linemodel(xvals, r$p[i,]))
+    hw <- kde(pw, H=matrix(c(0.01,0,0,0.1), nrow=2))
+    plot(hw)
+  }
