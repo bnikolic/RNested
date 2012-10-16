@@ -3,6 +3,8 @@ Type: Package
 Title: Implementation of the Nested Sampling algorithm in R
 Version: 0.1
 Depends:
+    plyr,
+    foreach,
     MASS,
     ks,
     plotrix
