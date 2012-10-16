@@ -1,0 +1,111 @@
+\documentclass[nojss]{jss}
+\usepackage{amsmath}
+
+\author{Bojan Nikolic}
+
+\title{Bayesian Curve Fitting using RNested}
+
+\Plainauthor{Bojan Nikolic} %% comma-separated
+
+\Address{
+ Bojan Nikolic\\
+ E-mail: \email{bojan@bnikolic.co.uk}\\
+}
+
+\Abstract{This document presents some simple examples of fitting
+curves using the RNested package}
+
+\Keywords{Bayesian inference}
+
+\begin{document}
+
+\section{Setting up the problem}
+
+The setup of the problem to be analysed proceeds in the standard
+fashion for Baysian analysis: the writing down of the likelihood
+function, the prior probability and the model to be used. 
+
+The examples here are based on assumption that the observations being
+fitted to have uncertainties that are normally distributed and
+independent. Therefore, a generator for the log-likelihood $\log P(D | \theta )$
+function can be written as:
+\begin{Scode}
+lkl1d <- function(x, yobs, model, err)
+  {
+    lf <- function(p) {
+      ym <- model(x, p)
+      res <- 0.5 * sum(((ym -yobs)/err)**2) +0.5 * sum(log(2*pi* err**2))
+      return (-res)
+    }
+    return (lf);
+  }
+\end{Scode}
+The parameters to this function are:
+\begin{description}
+\item[x] The abscissa points at which observations are available
+\item[yobs] The observed values 
+\item[model] The model to fit, which should be a function of one variable
+\item[err] The uncertainty in observations
+\end{description}
+
+Note also that:
+\begin{itemize}
+\item This is a function that returns a log-likelihood function. The
+returned function is \emph{closure} because it captures the values of
+the variables x, yobs, model and err
+\item The likelihood function is normalised 
+\item The likelihood function takes one argument only which is the
+point in parameter space ($\theta$) at which to compute the
+likelihood. The other necessary information is remembered through the
+closure mechanism
+\end{itemize}
+
+For the prior function we can use the \code{boxp} function from the
+\code{RNestd} package. So for example to generate a prior with uniform
+probability in the range $-1<x_1<6 \textrm{and} -1<x_2<6$ we can use:
+\begin{Scode}
+lpf <- boxp(c(-1,6,-1,6))
+\end{Scode}
+
+
+\section{Fitting a straight line}
+
+This is the simplest example: Bayesian fitting of a straight line in
+one dimension. The model in this case is simply a linear function:
+\begin{Scode}
+linemodel <- function(x, p)
+  {
+    x*p[[2]]+p[[1]]
+  }
+\end{Scode}
+
+We can generate some synthetic observation data as follows:
+\begin{Scode}{fig=TRUE, echo=TRUE}
+obsx <- 1:10        
+obsy <- linemodel(obsx, c(1,2))+rnorm(length(obsx))        
+plot(obsx, obsy)
+\end{Scode}
+
+Given these synthetic observations and the model, we can generate a
+likelihoood function as:
+\begin{Scode}
+slfn <- lkl1d(obsx, obsy,  linemodel, rep(1.0, length(obsx)))
+\end{Scode}
+
+The next step is to create a starting live set that uniformly
+populates the prior space. This can be done using the \code{sset.box}
+from the \code{RNested} package:
+\begin{Scode}
+ss <- sset.box(array( c(-1,6,-1,6) , dim=c(2,2)), 100, slfn)
+\end{Scode}
+
+Finally, the nested sampling can be run by:
+\begin{Scode}{fig=TRUE, echo=TRUE}
+r <- nested.sample(ss, slfn, lpf, mkCovarianceSampler(), N=3000)
+nested.summary(r[[2]])
+nested.hist2(r[[2]])
+\end{Scode}
+
+
+
+\end{document}
