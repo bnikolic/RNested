@@ -62,7 +62,7 @@ nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
 
     midpoints <- function(x) (x[-1]+x[-length(x)])/2
     
-    pw <-cbind(xvals, foreach(i=1:nrow(r), .combine=c) %do% linemodel(xvals, r$p[i,]))
+    pw <-cbind(xvals, foreach(i=1:nrow(r), .combine=c) %do% m(xvals, r$p[i,]))
         
     m <- tapply(rep(exp(r$ll)*r$w,nbins),
                 list(pw[,1],
@@ -70,5 +70,4 @@ nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
                 sum)
     image(xvals, midpoints(ycuts), m,
           ylim=c(ymin,ymax));
-    # Can add plots as plotrix::plotCI(obsx, obsy, 1.0, add=T)
   }
