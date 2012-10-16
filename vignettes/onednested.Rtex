@@ -1,6 +1,9 @@
 \documentclass[nojss]{jss}
 \usepackage{amsmath}
 
+%\VignettePackage{RNested}
+%\VignetteDepends{RNested}
+
 \author{Bojan Nikolic}
 
 \title{Bayesian Curve Fitting using RNested}
@@ -18,6 +21,10 @@ curves using the RNested package}
 \Keywords{Bayesian inference}
 
 \begin{document}
+
+\begin{Scode}
+  library(RNested)
+\end{Scode}
 
 \section{Setting up the problem}
 
