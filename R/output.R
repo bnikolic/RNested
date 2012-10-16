@@ -54,10 +54,19 @@ nested.hist2 <- function(r)
   }
 
 
-nested.fan <- function(r, m, xmin, xmax)
+nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
+                       nbins=100)
   {
-    xvals <- seq(xmin, xmax,  length.out=100)
+    xvals <- seq(xmin, xmax,  length.out=nbins)
+    ycuts <- seq(ymin, ymax, length.out=nbins+1)
+
+    midpoints <- function(x) (x[-1]+x[-length(x)])/2
+    
     pw <-cbind(xvals, foreach(i=1:nrow(r), .combine=c) %do% linemodel(xvals, r$p[i,]))
-    hw <- kde(pw, H=matrix(c(0.01,0,0,0.1), nrow=2))
-    plot(hw)
+        
+    m <- tapply(rep(exp(r$ll)*r$w,nbins),
+                list(pw[,1],
+                     cut( pw[,2], ycuts, include.lowest=TRUE)),
+                sum)
+    image(xvals, midpoints(ycuts), m);
   }
