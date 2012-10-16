@@ -68,5 +68,7 @@ nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
                 list(pw[,1],
                      cut( pw[,2], ycuts, include.lowest=TRUE)),
                 sum)
-    image(xvals, midpoints(ycuts), m);
+    image(xvals, midpoints(ycuts), m,
+          ylim=c(ymin,ymax));
+    # Can add plots as plotrix::plotCI(obsx, obsy, 1.0, add=T)
   }

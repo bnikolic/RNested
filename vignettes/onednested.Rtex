@@ -130,6 +130,13 @@ function:
 nested.hist2(r$cout)
 \end{Scode}
 
+Finally a fan-diagram can be plotted with:
+\begin{Scode}{fig=TRUE, echo=TRUE}
+nested.fan(r$cout, linemodel, 
+           0, 10, 0,30)  
+plotrix::plotCI(obsx, obsy, 1.0, add=T)
+\end{Scode}
+
 
 
 
