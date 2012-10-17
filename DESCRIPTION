@@ -12,6 +12,7 @@ Date: 2012-10-14
 Author: Bojan Nikolic
 Maintainer: Bojan Nikolic <bojan@bnikolic.co.uk>
 Description: 
+URL: https://github.com/bnikolic/RNested
 License: GPL-2
 Collate:
     'output.R'
