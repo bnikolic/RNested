@@ -40,7 +40,8 @@ nested.hist2 <- function(r)
             {
                       weighted.hist(r$p[,i],
                                     exp(r$ll)*r$w,
-                                    main=paste("Marginal probability distribution of parameter", i))
+                                    main=paste("Marginal probability distribution of parameter", i),
+                                    breaks="FD")
                     }
           else
             {
