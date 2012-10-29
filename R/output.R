@@ -56,10 +56,20 @@ nested.hist2 <- function(r)
 
 
 nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
-                       nbins=100)
+                       nbins=100,
+                       logy=FALSE)
   {
     xvals <- seq(xmin, xmax,  length.out=nbins)
-    ycuts <- seq(ymin, ymax, length.out=nbins+1)
+    if (logy)
+      {
+        ylabs <- seq(log10(ymin), log10(ymax), length.out=nbins+1)
+        ycuts <- 10**ylabs
+      }
+    else
+      {
+        ycuts <- seq(ymin, ymax, length.out=nbins+1)
+        ylabs <- ycuts
+      }
 
     midpoints <- function(x) (x[-1]+x[-length(x)])/2
     
@@ -69,6 +79,8 @@ nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
                 list(pw[,1],
                      cut( pw[,2], ycuts, include.lowest=TRUE)),
                 sum)
-    image(xvals, midpoints(ycuts), m,
-          ylim=c(ymin,ymax));
+    image(xvals,
+          midpoints(ylabs),
+          m,
+          ylim=c(min(ylabs),max(ylabs)));
   }
