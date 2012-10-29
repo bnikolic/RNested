@@ -84,3 +84,24 @@ nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
           m,
           ylim=c(min(ylabs),max(ylabs)));
   }
+
+##' Given model and result of nested sampling, compute the probability
+##' distribution of the value of the model at x
+##'
+##' @title 
+##' @param r Output of the nested sampler
+##' @param m Model
+##' @return  Output of histogram routine
+##' @author bnikolic
+nested.mhist <- function(r, m, x)
+  {
+    w <- exp(r$ll)*r$w
+    pw <-foreach(i=1:nrow(r), .combine=c) %do% m(x, r$p[i,])
+    m <- w!=0
+    w <- w[m]
+    pw <- pw[m]
+    weighted.hist(pw,
+                  w,
+                  main=paste("Probability distribution of model at ", x),
+                  breaks="FD")
+  }
