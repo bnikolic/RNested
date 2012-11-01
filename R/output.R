@@ -28,7 +28,14 @@ nested.summary <- function(r)
   }
 
 
-
+##' Histogram the marginal probability  distributions of each
+##' parameter (diagonal) and the 2d-contour-plot the joint probability
+##' distribution of each pair of model parameters
+##'
+##' @title nested.hist2
+##' @param r Output of nested sampling
+##' @return 
+##' @author bnikolic
 nested.hist2 <- function(r)
   {
     N <- dim(r$p)[2]
@@ -55,6 +62,24 @@ nested.hist2 <- function(r)
   }
 
 
+##' Draw a fan-diagram for a one-dimensional function model, e.g., a
+##' spectrum.  
+##'
+##' Each vertical slice through the fan-diagram represents the
+##' probability distribution of the model at that abcissa value. 
+##' 
+##' @title 
+##' @param r Results of nested sampling
+##' @param m The model 
+##' @param xmin 
+##' @param xmax 
+##' @param ymin 
+##' @param ymax 
+##' @param nbins Number of bins to use (same number is used in the obcisa and ordinate directions) 
+##' @param logy  Transform the ordinate axis into a log-axis (useful
+##' for power-law and exponential  models and their combinations)
+##' @return 
+##' @author bnikolic
 nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
                        nbins=100,
                        logy=FALSE)
@@ -85,8 +110,9 @@ nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
           ylim=c(min(ylabs),max(ylabs)));
   }
 
-##' Given model and result of nested sampling, compute the probability
-##' distribution of the value of the model at x
+##' Given a model and the result of nested sampling, compute the
+##' probability distribution of the value of the model at some
+##' evaluation point x
 ##'
 ##' @title 
 ##' @param r Output of the nested sampler
