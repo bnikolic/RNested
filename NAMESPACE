@@ -1,1 +1,1 @@
-export(boxp, sset.box, mkCovarianceSampler, nested.sample, nested.fan, nested.summary, nested.hist2)
+export(boxp, sset.box, mkCovarianceSampler, nested.sample, nested.fan, nested.summary, nested.hist2, nested.GaussLkl, nested.PolyModelg)
