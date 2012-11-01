@@ -1,7 +1,7 @@
 Package: RNested
 Type: Package
 Title: Implementation of the Nested Sampling algorithm in R
-Version: 0.1
+Version: 0.2
 Depends:
     plyr,
     foreach,
@@ -12,7 +12,7 @@ Date: 2012-10-14
 Author: Bojan Nikolic
 Maintainer: Bojan Nikolic <bojan@bnikolic.co.uk>
 Description: 
-URL: https://github.com/bnikolic/RNested
+URL: http://www.mrao.cam.ac.uk/~bn204/galevol/speca/rnested.html, https://github.com/bnikolic/RNested
 License: GPL-2
 Collate:
     'output.R'
