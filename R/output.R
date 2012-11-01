@@ -130,4 +130,8 @@ nested.mhist <- function(r, m, x)
                   w,
                   main=paste("Probability distribution of model at ", x),
                   breaks="FD")
+
+    x1 <- sum(pw*w)/sum(w)
+    x2 <- sum((pw-x1)**2*w)/sum(w)
+    print(paste("*** Model prediction and error: ", x1, " +/- ", x2))
   }
