@@ -31,9 +31,9 @@ nested.GaussLkl <- function(x, yobs, model, err)
 ##' @title nested.PolyModel
 ##' @param x 
 ##' @param p 
-##' @return 
+##' @return Value at x for parameters p
 ##' @author bnikolic
-nested.PolyModel <- function(x, p)
+nested.PolyModelg <- function(x, p)
   {
     r <- p[[1]]
     for (i in 2:length(p))

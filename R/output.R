@@ -34,7 +34,7 @@ nested.summary <- function(r)
 ##'
 ##' @title nested.hist2
 ##' @param r Output of nested sampling
-##' @return 
+##' @return None
 ##' @author bnikolic
 nested.hist2 <- function(r)
   {
@@ -68,7 +68,7 @@ nested.hist2 <- function(r)
 ##' Each vertical slice through the fan-diagram represents the
 ##' probability distribution of the model at that abcissa value. 
 ##' 
-##' @title 
+##' @title nested.fan
 ##' @param r Results of nested sampling
 ##' @param m The model 
 ##' @param xmin 
@@ -78,7 +78,7 @@ nested.hist2 <- function(r)
 ##' @param nbins Number of bins to use (same number is used in the obcisa and ordinate directions) 
 ##' @param logy  Transform the ordinate axis into a log-axis (useful
 ##' for power-law and exponential  models and their combinations)
-##' @return 
+##' @return  None
 ##' @author bnikolic
 nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
                        nbins=100,
@@ -114,7 +114,7 @@ nested.fan <- function(r, m, xmin, xmax, ymin, ymax,
 ##' probability distribution of the value of the model at some
 ##' evaluation point x
 ##'
-##' @title 
+##' @title nested.mhist
 ##' @param r Output of the nested sampler
 ##' @param m Model
 ##' @return  Output of histogram routine
