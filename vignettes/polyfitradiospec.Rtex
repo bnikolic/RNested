@@ -1,0 +1,63 @@
+\documentclass[nojss]{jss}
+\usepackage{amsmath}
+\usepackage{astrojournals}
+
+\author{Bojan Nikolic}
+
+\title{Bayesian Fitting of Spectra of Radio Sources Using Polynomials}
+
+\Plainauthor{Bojan Nikolic} %% comma-separated
+
+\Address{
+ Bojan Nikolic\\
+ E-mail: \email{b.nikolic@mrao.cam.ac.uk}\\
+}
+
+\Abstract{There have recently been two papers using Bayesian fitting
+  of polynomial models to low-frequency radio source spectra. Here I
+  show how such an analysis, and a little more, can be made in R using
+  RNested.}
+
+\Keywords{Bayesian inference}
+
+\usepackage{Sweave}
+\begin{document}
+
+\section{Introduction}
+
+After transforming the radiospec package into RNested I came across a
+couple of papers \citep{2012MNRAS.423L..30S,2012A&A...547A..56D} that
+do Bayesian analysis of low-frequency radio source spectra using
+polynomial models. I am rather unsure polynomial models are optimum
+way to go, but nevertheless here is how one could repeat such an
+analysis (and add a little more) using RNested.  This vignette
+naturally uses RNested, so you should loaded it using:
+
+\begin{Scode}
+  library(RNested)
+\end{Scode}
+
+\section{Observed data}
+
+For the examples below I will use the observed data for 3C48 collated
+and brought to common flux scale by \citep{2012MNRAS.423L..30S} (I
+recovered the data from the plot in that paper, any mistakes are my
+own). The data are now distributed with the RNested package, so you
+can access them as:
+
+\begin{Scode}{results=tex}
+  library(xtable)
+  data("radiospec_scaife2012_3c48")
+  xtable(radiospec_scaife2012_3c48)
+\end{Scode}
+
+
+\section{Analysis}
+
+The aim of the analysis 
+
+
+\bibliography{rnestedvig}
+
+\end{document}
+
