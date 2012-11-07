@@ -31,10 +31,10 @@ make Bayesian analysis of low-frequency radio source spectra using
 polynomial models. I am rather unsure polynomial models are optimum
 way to go [fitting physical models would be more satisfactory
 \citealt{2009arXiv0912.2317N}, or at least one could adopt a more
-frequency invariant formulation than polynomial], but nevertheless
-here is how one could repeat such an analysis (and add a little more)
-using RNested.  This vignette naturally uses RNested, so you should
-loaded it using:
+frequency invariant formulation than polynomial since the motivation
+is primarily simply interpolate], but nevertheless here is how one
+could repeat such an analysis (and add a little more) using RNested.
+This vignette naturally uses RNested, so you should loaded it using:
 
 \begin{Scode}
   library(RNested)
@@ -83,9 +83,10 @@ Note that the at this point we have adopted 150\,MHz for the zero
 value of log-frequency used in polynomial calculation.
 
 Finally it is necessary to create the prior function. In this case we
-the prior function with the generation of the starting set for nested
-sampling (which is based on the prior box and therefore naturally
-related). Both of these are carried out in function:
+combine the creation of the prior function with the generation of the
+starting set for nested sampling (which is based on the prior box and
+therefore naturally related). Both of these are carried out in the
+utility function \code{prepp}:
 
 \begin{Scode}
 prepp <- function(n)
@@ -96,12 +97,14 @@ prepp <- function(n)
         pp <- c(pp, -1,1)
       }
     lpf <- boxp(pp)
-    ss <- sset.box(array( pp , dim=c(2,length(pp)/2)), 100, f)
+    ss <- sset.box(array( pp , dim=c(2,length(pp)/2)), 
+    100, 
+    mkLkl(radiospec_scaife2012_3c48))
     list(lpf=lpf, ss=ss)
   }
 \end{Scode}
 
-Some things to node about \code{prepp} function:
+Some things to note about \code{prepp} function:
 \begin{itemize}
   \item The parameter \code{n} controls the dimensionality of the
     parameter space and therefore the order of the polynomial to be
@@ -110,12 +113,72 @@ Some things to node about \code{prepp} function:
     1 and 3, while the prior for all polynomial components is between
     -1 and 1
   \item 100 points are used in the starting set (third parameter to
-    \code{sset.box}
+    \code{sset.box})
 \end{itemize}
 
+\section{Evaluating the Evidence Using Nested Sampling}
 
+Here is an example of how to compute the evidence value first-order
+polynomial fit to the observed data:
+\begin{Scode}{fig=TRUE}
+p <- prepp(1)  
+r <- nested.sample(p$ss, 
+                   mkLkl(radiospec_scaife2012_3c48), 
+                   p$lpf, 
+                   mkCovarianceSampler(), 
+                   N=3000)
+nested.summary(r$cout)
+\end{Scode}
+The summary and graph of evidence growth is printed by the
+\code{nested.summary()} function. 
 
+As in the previous approaches to this analysis, it is however the
+relative evidence values for different models that are of interest in
+deciding in which model should be preferred. In this case we will
+consider models up to fifth order polynomial, which can be done easily
+with following code:
 
+\begin{Scode}
+  rr <- Map(function (n) {
+    p <- prepp(n)  
+    r <- nested.sample(p$ss, 
+                       mkLkl(radiospec_scaife2012_3c48), 
+                       p$lpf, 
+                       mkCovarianceSampler(), 
+                       N=3000)
+    r}, 1:5)
+  r2<-Map(function(r) {nested.summary(r$cout)}, rr);
+\end{Scode}
+This shows that model the 3$^{\rm rd}$ order polynomial model (3$^{\rm
+  rd}$ row) is the preferred model. Note that the evidence values in
+this analysis are based on a fixed prior as setup in the \code{prepp}
+function, in contrast to the analysis by \citep{2012MNRAS.423L..30S}.
+
+\section{Using Nested Sampling To Predicting Source Flux Density}
+
+The previous section show the which order of polynomial models should
+be preferred for this particular observed spectrum. This in itself is
+not of particularly useful since polynomial models do not directly
+have a physical significance. However, one of the root motivations for
+an analysis such as presented above is to essentially interpolate the
+observed spectrum to another frequency.
+
+One could do that by extracting the maximum likelihood parameters for
+the preferred model and using that for the prediction. A more accurate
+method, and one which also automatically calculates correct confidence
+intervals, is to use the posterior distribution of the model
+parameters to predict the distribution of model values at a particular
+frequency. This can be achieved using the \code{nested.mhist} function:
+\begin{Scode}
+  nested.mhist
+\end{Scode}
+while recalling the 3$^{\rm rd}$ order model was preferred as follows:
+\begin{Scode}{fig=TRUE}
+  nested.mhist(rr[[3]], nested.PolyModel,   log10(200/150.))
+\end{Scode}
+The output of this routine is the histogram of the probability
+distribution of flux density of 3C48 source at 200\,MHz assuming 3rd
+order polynomial model and priors as setup in \code{prepp} function.
 
 \bibliography{rnestedvig}
 
