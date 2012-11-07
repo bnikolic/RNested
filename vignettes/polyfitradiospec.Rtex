@@ -27,11 +27,14 @@
 
 After transforming the radiospec package into RNested I came across a
 couple of papers \citep{2012MNRAS.423L..30S,2012A&A...547A..56D} that
-do Bayesian analysis of low-frequency radio source spectra using
+make Bayesian analysis of low-frequency radio source spectra using
 polynomial models. I am rather unsure polynomial models are optimum
-way to go, but nevertheless here is how one could repeat such an
-analysis (and add a little more) using RNested.  This vignette
-naturally uses RNested, so you should loaded it using:
+way to go [fitting physical models would be more satisfactory
+\citealt{2009arXiv0912.2317N}, or at least one could adopt a more
+frequency invariant formulation than polynomial], but nevertheless
+here is how one could repeat such an analysis (and add a little more)
+using RNested.  This vignette naturally uses RNested, so you should
+loaded it using:
 
 \begin{Scode}
   library(RNested)
@@ -42,19 +45,76 @@ naturally uses RNested, so you should loaded it using:
 For the examples below I will use the observed data for 3C48 collated
 and brought to common flux scale by \citep{2012MNRAS.423L..30S} (I
 recovered the data from the plot in that paper, any mistakes are my
-own). The data are now distributed with the RNested package, so you
-can access them as:
+own). The data are distributed with the RNested package as of version
+0.2, so you can access them as:
 
 \begin{Scode}{results=tex}
   library(xtable)
   data("radiospec_scaife2012_3c48")
-  xtable(radiospec_scaife2012_3c48)
+  xtable(radiospec_scaife2012_3c48, caption="Observed flux density as
+  function of frequency for radio source 3C48")
 \end{Scode}
 
+\section{Setting up the problem}
 
-\section{Analysis}
+As promised by the title of this note, the model we are going to use
+is a polynomial model. In fact, the appropriate model is packaged with
+in RNested as function \code{nested.PolyModel}, defined as:
+\begin{Scode}
+nested.PolyModel
+\end{Scode}
 
-The aim of the analysis 
+We assume that individual measurements are independent and normally
+distributed leading to a likelihood that is a product of Gaussian
+likelihoods. For this we can use the function \code{nested.GaussLkl}
+supplied with \code{RNested} and a small auxiliary function of the
+form:
+
+\begin{Scode}
+mkLkl <- function(d)
+  {
+    nested.GaussLkl(log10(d$Freq/150),
+                    d$Flux,
+                    nested.PolyModel,
+                    d$Flux*d$fErr)
+  }
+\end{Scode}
+Note that the at this point we have adopted 150\,MHz for the zero
+value of log-frequency used in polynomial calculation.
+
+Finally it is necessary to create the prior function. In this case we
+the prior function with the generation of the starting set for nested
+sampling (which is based on the prior box and therefore naturally
+related). Both of these are carried out in function:
+
+\begin{Scode}
+prepp <- function(n)
+  {
+    pp <- c(1,3)
+    for (i in 1:n)
+      {
+        pp <- c(pp, -1,1)
+      }
+    lpf <- boxp(pp)
+    ss <- sset.box(array( pp , dim=c(2,length(pp)/2)), 100, f)
+    list(lpf=lpf, ss=ss)
+  }
+\end{Scode}
+
+Some things to node about \code{prepp} function:
+\begin{itemize}
+  \item The parameter \code{n} controls the dimensionality of the
+    parameter space and therefore the order of the polynomial to be
+    used to fitting 
+  \item The prior on logarithm of flux density at 150\,MHz is between
+    1 and 3, while the prior for all polynomial components is between
+    -1 and 1
+  \item 100 points are used in the starting set (third parameter to
+    \code{sset.box}
+\end{itemize}
+
+
+
 
 
 \bibliography{rnestedvig}
