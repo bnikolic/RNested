@@ -25,11 +25,14 @@
 
 \section{Introduction}
 
-After transforming the radiospec package into RNested I came across a
-couple of papers \citep{2012MNRAS.423L..30S,2012A&A...547A..56D} that
-make Bayesian analysis of low-frequency radio source spectra using
-polynomial models. I am rather unsure polynomial models are optimum
-way to go [fitting physical models would be more satisfactory
+After transforming the radiospec\footnote{The original package is
+  available from
+  \url{http://www.mrao.cam.ac.uk/~bn204/galevol/speca/build.html}}
+package into RNested I came across a couple of relatively recent
+papers \citep{2012MNRAS.423L..30S,2012A&A...547A..56D} that make use
+Bayesian analysis of low-frequency radio source spectra based on
+polynomial models. I am unsure polynomial models are optimum way to go
+[fitting physical models would be more satisfactory
 \citealt{2009arXiv0912.2317N}, or at least one could adopt a more
 frequency invariant formulation than polynomial since the motivation
 is primarily simply interpolate], but nevertheless here is how one
@@ -129,8 +132,10 @@ r <- nested.sample(p$ss,
                    N=3000)
 nested.summary(r$cout)
 \end{Scode}
+
 The summary and graph of evidence growth is printed by the
-\code{nested.summary()} function. 
+\code{nested.summary()} function. The growth curve can be inspected to
+ensure that the nested sampling has converged. 
 
 As in the previous approaches to this analysis, it is however the
 relative evidence values for different models that are of interest in
@@ -149,10 +154,12 @@ with following code:
     r}, 1:5)
   r2<-Map(function(r) {nested.summary(r$cout)}, rr);
 \end{Scode}
+
 This shows that model the 3$^{\rm rd}$ order polynomial model (3$^{\rm
   rd}$ row) is the preferred model. Note that the evidence values in
 this analysis are based on a fixed prior as setup in the \code{prepp}
-function, in contrast to the analysis by \citep{2012MNRAS.423L..30S}.
+function, in contrast to the analysis by \cite{2012MNRAS.423L..30S}
+who set priors around the maximum likelihood point.
 
 \section{Using Nested Sampling To Predicting Source Flux Density}
 
@@ -168,17 +175,22 @@ the preferred model and using that for the prediction. A more accurate
 method, and one which also automatically calculates correct confidence
 intervals, is to use the posterior distribution of the model
 parameters to predict the distribution of model values at a particular
-frequency. This can be achieved using the \code{nested.mhist} function:
+frequency. This can be achieved using the \code{nested.mhist} function
+supplied with RNested:
 \begin{Scode}
   nested.mhist
 \end{Scode}
+
 while recalling the 3$^{\rm rd}$ order model was preferred as follows:
+
 \begin{Scode}{fig=TRUE}
   nested.mhist(rr[[3]]$cout, nested.PolyModel,   log10(200/150.))
 \end{Scode}
+
 The output of this routine is the histogram of the probability
 distribution of flux density of 3C48 source at 200\,MHz assuming 3rd
 order polynomial model and priors as setup in \code{prepp} function.
+
 
 \bibliography{rnestedvig}
 
