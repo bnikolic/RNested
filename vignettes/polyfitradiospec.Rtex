@@ -174,7 +174,7 @@ frequency. This can be achieved using the \code{nested.mhist} function:
 \end{Scode}
 while recalling the 3$^{\rm rd}$ order model was preferred as follows:
 \begin{Scode}{fig=TRUE}
-  nested.mhist(rr[[3]], nested.PolyModel,   log10(200/150.))
+  nested.mhist(rr[[3]]$cout, nested.PolyModel,   log10(200/150.))
 \end{Scode}
 The output of this routine is the histogram of the probability
 distribution of flux density of 3C48 source at 200\,MHz assuming 3rd
