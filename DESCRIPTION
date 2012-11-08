@@ -10,9 +10,9 @@ Depends:
     plotrix
 Date: 2012-10-14
 Authors@R: c(person("Bojan", "Nikolic", role=c("aut", "cre"),
-                    email="bojan@bnikolic.co.uk"))                             
+    email="bojan@bnikolic.co.uk"))
 Description: Routines implementing the Nested Sampling algorithm for
-   computing the Baysian evidence and parameter posterior distributions.
+    computing the Baysian evidence and parameter posterior distributions.
 URL: http://www.mrao.cam.ac.uk/~bn204/galevol/speca/rnested.html,
     https://github.com/bnikolic/RNested
 License: GPL-2
