@@ -1,1 +1,9 @@
 /vignettes/polyfitradiospec.tex
+vignettes/onednested.tex
+/vignettes/*.pdf
+/vignettes/*.aux
+/vignettes/*.bbl
+/vignettes/*.blg
+/vignettes/*.log
+/vignettes/*.out
+

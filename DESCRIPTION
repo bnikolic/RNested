@@ -20,4 +20,4 @@ Collate:
     'output.R'
     'RNested.R'
     'radiospec.R'
-BuildVignettes: FALSE
+BuildVignettes: TRUE
