@@ -65,7 +65,7 @@ hcxnS <- function(p, J)
 
 mkLkl <- function()
   {
-    dd <- read.csv("hc9ndata.csv", header=T)
+    dd <- read.csv("hc9ndata.csv", header=T, comment.char="#")
     nested.GaussLkl(dd$J, dd$S, function(x,p) {hcxnS(p,x) }, dd$SErr);
   }
 
