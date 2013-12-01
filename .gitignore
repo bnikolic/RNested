@@ -6,4 +6,13 @@ vignettes/onednested.tex
 /vignettes/*.blg
 /vignettes/*.log
 /vignettes/*.out
+/man/*
 
+/examples/polyfitradiospec.aux
+/examples/polyfitradiospec.blg
+/examples/polyfitradiospec.bbl
+/examples/polyfitradiospec.log
+/examples/polyfitradiospec.out
+/examples/polyfitradiospec.pdf
+/examples/polyfitradiospec.tex
+/RNested_0.2.tar.gz
