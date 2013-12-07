@@ -1,5 +1,6 @@
 library('devtools');
 library('ggplot2');
+library(densityvis)
 load_all("/home/bnikolic/d/n/RNested/")
 
 nuX <- function(X)
@@ -84,8 +85,10 @@ prepp <- function()
 
 # ggplot(dd) + geom_errorbar(aes(L, S, ymin=S-SErr, ymax=S+SErr, colour='red')) + geom_point(aes(L, hcxnS(c(-9.333890,  0.659134), dd$L))) + facet_grid(. ~ L, scales="free_x") + theme(axis.text.x=element_blank() ,axis.ticks.x = element_blank() ,panel.grid.minor.x=element_blank(), panel.grid.major.x=element_blank())
 
-#ggplot(dd) + scale_y_continuous(limits=c(0, 1.25))+ geom_errorbar(aes(L, S, ymin=S-SErr, ymax=S+SErr, colour='red')) + geom_point(aes(L, hcxnS(c(-9.333890,  0.659134), dd$L))) + facet_grid(. ~ L, scales="free_x") +  theme_bw()+ theme(axis.text.x=element_blank() ,axis.ticks.x = element_blank() ,panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x = element_text(face="bold", size=12),          axis.title.y = element_text(face="bold", size=12, angle=90), legend.title=element_blank())+     stat_abline(intercept=0, slope=0, linetype="dotted")
+#ggplot(dd) + scale_y_continuous(limits=c(0, 1.25))+ geom_errorbar(aes(J, S, ymin=S-SErr, ymax=S+SErr, colour='red')) + geom_point(aes(J, hcxnS(c(-9.333890,  0.659134), dd$J))) + facet_grid(. ~ J, scales="free_x") +  theme_bw()+ theme(axis.text.x=element_blank() ,axis.ticks.x = element_blank() ,panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x = element_text(face="bold", size=12),          axis.title.y = element_text(face="bold", size=12, angle=90), legend.title=element_blank())+     stat_abline(intercept=0, slope=0, linetype="dotted")
 
 
 #p <- prepp()
 #r <- nested.sample(p$ss, xx,  p$lpf,   mkCovarianceSampler(),                    N=1000)
+
+# local_density_2d(r$cout$p[ww >0,1],  r$cout$p[ww >0,2], weight=(exp(r$cout$ll)*r$cout$w)[ww >0] )

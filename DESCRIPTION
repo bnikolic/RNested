@@ -7,7 +7,8 @@ Depends:
     foreach,
     MASS,
     ks,
-    plotrix
+    plotrix,
+    locfit
 Date: 2012-10-14
 Authors@R: c(person("Bojan", "Nikolic", role=c("aut", "cre"),
     email="bojan@bnikolic.co.uk"))
