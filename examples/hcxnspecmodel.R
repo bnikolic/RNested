@@ -79,6 +79,23 @@ prepp <- function()
     list(lpf=lpf, ss=ss)
   }
 
+##' Turn an density function to dataframe suitable for tile plot
+##'
+##' Suitable for use with output from local_density_2d. (TODO: Move
+##' this function to suitable file)
+##' @title 
+##' @param de density estimated function
+##' @param n  Number of points on each axis to evalute
+##' @return 
+##' @author bnikolic
+densitydf <- function(de, n)
+  {
+    ax <- function(lims) {seq(lims[[1]], lims[[2]], length.out=n)}
+    gg <- expand.grid(x=ax(attributes(de)$xlim),
+                      y=ax(attributes(de)$ylim))
+    gg <- data.frame( x=gg$x, y=gg$y, z= de(gg$x, gg$y))
+    gg
+  }
 
 # optim( c(-9,0.5) , function(p) { -1*xx(p)}) check convergance with.
 # ggplot(dd) + geom_errorbar(aes(L, S, ymin=S-SErr, ymax=S+SErr, colour='red')) + geom_point(aes(L, hcxnS(c(-9.333890,  0.659134), dd$L)))
