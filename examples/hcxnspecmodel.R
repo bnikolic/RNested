@@ -1,5 +1,6 @@
 library('devtools');
 library('ggplot2');
+library('grid');
 library(densityvis)
 load_all("/home/bnikolic/d/n/RNested/")
 
@@ -108,4 +109,63 @@ densitydf <- function(de, n)
 #p <- prepp()
 #r <- nested.sample(p$ss, xx,  p$lpf,   mkCovarianceSampler(),                    N=1000)
 
+#ww= exp(r$cout$ll)*r$cout$w
 # local_density_2d(r$cout$p[ww >0,1],  r$cout$p[ww >0,2], weight=(exp(r$cout$ll)*r$cout$w)[ww >0] )
+
+
+# See http://stackoverflow.com/questions/11546256/two-way-density-plot-combined-with-one-way-density-plot-with-selected-regions-in/11590446#11590446
+# for how to combine plots
+
+dplot <- function(cc)
+  {
+    ww  <- exp(cc$ll) * cc$w
+    dfn <- local_density_2d(cc$p[ww >0, 1],
+                            cc$p[ww >0, 2],
+                            weight=ww[ww >0] )
+    p1 <- ggplot_gtable(ggplot_build(qplot(x, y,
+                                           data=densitydf(dfn, 100),
+                                           fill=z, z=z, geom="tile")))
+
+    gt1 <- gtable_add_cols(p1, unit(0.3, "null"), pos = -1)
+    gt1 <- gtable_add_rows(gt1, unit(0.3, "null"), pos = 0)
+
+    margp <- function(pii,
+                      flip)
+      {
+        d11 <- local_density_1d(cc$p[ww >0, pii],
+                                weight=ww[ww >0] )
+
+        pp <- ggplot(data.frame(x = c(attributes(d11)$xlim[[1]],
+                                  attributes(d11)$xlim[[2]])), aes(x))        + stat_function(fun = d11, n=500)
+        
+        if (flip)
+          pp <- pp + coord_flip(c(attributes(d11)$xlim[[1]],
+                                  attributes(d11)$xlim[[2]]))
+        else
+          pp <- pp + coord_cartesian(c(attributes(d11)$xlim[[1]],
+                                       attributes(d11)$xlim[[2]]))
+
+        ggplot_gtable(ggplot_build(pp))
+      }
+
+    p2 <- margp(1, FALSE)
+
+    gt1 <- gtable_add_grob(gt1, p2$grobs[[which(p2$layout$name == "panel")]],
+                           1, 4, 1, 4)
+    gt1 <- gtable_add_grob(gt1, p2$grobs[[which(p2$layout$name == "axis-l")]],
+                           1, 3, 1, 3, clip = "off")
+
+    p3 <- margp(2, TRUE)
+    gt1 <- gtable_add_grob(gt1,
+                           p3$grobs[[which(p3$layout$name == "panel")]],
+                           4, 6, 4, 6)
+    gt1 <- gtable_add_grob(gt1,
+                           p3$grobs[[which(p3$layout$name == "axis-b")]],
+                           5, 6, 5, 6, clip = "off")
+    
+
+    grid.newpage()
+    grid.draw(gt1)
+    
+    
+  }
