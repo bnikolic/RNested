@@ -122,9 +122,9 @@ dplot <- function(cc)
     dfn <- local_density_2d(cc$p[ww >0, 1],
                             cc$p[ww >0, 2],
                             weight=ww[ww >0] )
-    p1 <- ggplot_gtable(ggplot_build(qplot(x, y,
-                                           data=densitydf(dfn, 100),
-                                           fill=z, z=z, geom="tile")))
+    p1 <- ggplot_gtable(ggplot_build(ggplot(densitydf(dfn, 100),
+                                            aes(x, y))+
+                                            geom_tile(aes(fill=z))))
 
     gt1 <- gtable_add_cols(p1, unit(0.3, "null"), pos = -1)
     gt1 <- gtable_add_rows(gt1, unit(0.3, "null"), pos = 0)
@@ -136,7 +136,8 @@ dplot <- function(cc)
                                 weight=ww[ww >0] )
 
         pp <- ggplot(data.frame(x = c(attributes(d11)$xlim[[1]],
-                                  attributes(d11)$xlim[[2]])), aes(x))        + stat_function(fun = d11, n=500)
+                                  attributes(d11)$xlim[[2]])),
+                     aes(x)) + stat_function(fun = d11, n=500) +theme(axis.text.x=element_blank() ,axis.ticks.x = element_blank() ,panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x = element_text(face="bold", size=12),          axis.title.y = element_text(face="bold", size=12, angle=90), legend.title=element_blank())
         
         if (flip)
           pp <- pp + coord_flip(c(attributes(d11)$xlim[[1]],
