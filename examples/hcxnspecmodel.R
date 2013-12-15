@@ -1,6 +1,7 @@
 library('devtools');
 library('ggplot2');
 library('grid');
+library(Cairo)
 library(densityvis)
 load_all("/home/bnikolic/d/n/RNested/")
 
@@ -122,41 +123,66 @@ dplot <- function(cc)
     dfn <- local_density_2d(cc$p[ww >0, 1],
                             cc$p[ww >0, 2],
                             weight=ww[ww >0] )
-    p1 <- ggplot_gtable(ggplot_build(ggplot(densitydf(dfn, 100),
+    mm <- max(ww)
+    xl = c(min(cc$p[ww > mm * 1e-10, 1]),
+             max(cc$p[ww >mm * 1e-10, 1]))
+    yl = c(min(cc$p[ww >mm * 1e-10, 2]),
+           max(cc$p[ww >mm * 1e-10, 2]))
+
+    th <- function() {
+      theme_bw() + theme(
+                     #axis.text.x=element_blank() ,
+#            axis.ticks.x = element_blank() ,
+            panel.grid.minor=element_blank(),
+            panel.grid.major=element_blank(),
+            axis.title.x = element_text(face="bold", size=12),
+            axis.title.y = element_text(face="bold", size=12, angle=90),
+            legend.title=element_blank() )
+    }
+    
+    p1 <- ggplot_gtable(ggplot_build(ggplot(densitydf(dfn, 300),
                                             aes(x, y))+
-                                            geom_tile(aes(fill=z))))
+                                     geom_tile(aes(fill=z))+ 
+                                     geom_contour(aes(z=z))+
+                                     coord_cartesian(xlim=xl, ylim=yl)+
+                                     scale_fill_gradient(low = "white",
+                                                         high = "steelblue")+
+                                     th()+
+                                     xlab(expression(T))+
+                                     ylab(expression(rho))))
 
     gt1 <- gtable_add_cols(p1, unit(0.3, "null"), pos = -1)
     gt1 <- gtable_add_rows(gt1, unit(0.3, "null"), pos = 0)
 
     margp <- function(pii,
+                      l,
                       flip)
       {
         d11 <- local_density_1d(cc$p[ww >0, pii],
                                 weight=ww[ww >0] )
 
-        pp <- ggplot(data.frame(x = c(attributes(d11)$xlim[[1]],
-                                  attributes(d11)$xlim[[2]])),
-                     aes(x)) + stat_function(fun = d11, n=500) +theme(axis.text.x=element_blank() ,axis.ticks.x = element_blank() ,panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x = element_text(face="bold", size=12),          axis.title.y = element_text(face="bold", size=12, angle=90), legend.title=element_blank())
+        pp <- ggplot(data.frame(x = l), aes(x)) +
+          stat_function(fun = d11, n=500) +
+            th() 
         
         if (flip)
-          pp <- pp + coord_flip(c(attributes(d11)$xlim[[1]],
-                                  attributes(d11)$xlim[[2]]))
+          pp <- pp + coord_flip(l) + theme(axis.ticks.x = element_blank(),
+                                                axis.text.x=element_blank())
         else
-          pp <- pp + coord_cartesian(c(attributes(d11)$xlim[[1]],
-                                       attributes(d11)$xlim[[2]]))
+          pp <- pp + coord_cartesian(l) + theme(axis.ticks.y = element_blank(),
+                                                axis.text.y=element_blank())
 
         ggplot_gtable(ggplot_build(pp))
       }
 
-    p2 <- margp(1, FALSE)
+    p2 <- margp(1, xl, FALSE)
 
     gt1 <- gtable_add_grob(gt1, p2$grobs[[which(p2$layout$name == "panel")]],
                            1, 4, 1, 4)
     gt1 <- gtable_add_grob(gt1, p2$grobs[[which(p2$layout$name == "axis-l")]],
                            1, 3, 1, 3, clip = "off")
 
-    p3 <- margp(2, TRUE)
+    p3 <- margp(2, yl, TRUE)
     gt1 <- gtable_add_grob(gt1,
                            p3$grobs[[which(p3$layout$name == "panel")]],
                            4, 6, 4, 6)
@@ -165,8 +191,9 @@ dplot <- function(cc)
                            5, 6, 5, 6, clip = "off")
     
 
-    grid.newpage()
+    #grid.newpage()
     grid.draw(gt1)
     
-    
   }
+
+# CairoPDF("test.pdf"); dplot(r$cout); dev.off()
